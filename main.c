@@ -1,50 +1,63 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-#define MAX 15
+void create_file(int **matrix, int num) {
+    FILE *file = fopen("table.md", "w");
+    if (file == NULL) {
+        printf("Error opening file\n");
+    } 
 
-int matrix[MAX][MAX] = {0};
-
-void generate_triangle(int num) {
-  for (int i = 0; i <= MAX; i++) {
-    matrix[i][0] = 1;
-  }
-
-  for (int i = 1; i <= num; i++) {
-    for (int j = 1; j <= num; j++) {
-      matrix[i][j] = matrix[i - 1][j] + matrix[i - 1][j - 1];
+    for (int i = 1; i <= num; i++) {
+        fprintf(file, "| %d ", i);
     }
-  }
-}
+    
+    fprintf(file, "\n");
 
-void print_matrix(int num) {
-  for (int i = 0; i <= num; i++) {
-    for (int j = 0; j <= num; j++) {
-      if (matrix[i][j] > 0) {
-        printf("%d ", matrix[i][j]);
-      }
+    for (int i = 0; i < num; i++) {
+        fprintf(file, "| :---: ");
     }
-    printf("\n");
-  }
-}
+    
+    fprintf(file, "\n");
 
-int prompt_user() {
-  int num = 0;
-  while (1) {
-    printf("How many lines? ");
-    scanf("%d", &num);
-    if (num < 1) {
-      printf("Number should be bigger or equal than 1.");
-    } else if (num > 15) {
-      printf("Limit of 15 lines exceeded.");
-    } else {
-      return num;
+    for (int i = 0; i < num; i++) {
+        for (int j = 0; j < num; j++) {
+            if (matrix[i][j] != 0) {
+                fprintf(file, "| %d ", matrix[i][j]);
+            }
+        }
+        fprintf(file, "\n");
     }
-  }
+
+    fclose(file);
 }
 
 int main() {
-  int x = prompt_user();
-  generate_triangle(x);
-  print_matrix(x);
-  return 0;
-}
+    int num;
+
+    printf("Quantas linhas?");
+    scanf("%d", &num);
+
+    int **matrix = calloc(num, sizeof(int*));
+
+    for (int i = 0; i < num; i++) { 
+        matrix[i] = calloc(num, sizeof(int));
+    }
+
+    for (int i = 0; i < num; i++) {
+        matrix[i][0] = 1;
+    }
+
+    for (int i = 1; i < num; i++) {
+        for (int j = 1; j < num; j++) { 
+            matrix[i][j] = matrix[i - 1][j] + matrix[i - 1][j - 1]; 
+        }
+    }
+
+    create_file(matrix, num);
+
+    for (int i = 0; i < num; i++) {
+        free(matrix[i]);
+    }
+
+    free(matrix);
+} 
